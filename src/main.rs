@@ -5,6 +5,7 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
+use bootloader::BootInfo;
 
 mod vga_buffer;
 mod serial;
@@ -13,17 +14,14 @@ mod serial;
 pub extern "C" fn _start() -> ! {
     println!("Hello World{}", "!");
 
-    av_os::init(); // new
+    av_os::init();
 
-    // invoke a breakpoint exception
-    x86_64::instructions::interrupts::int3(); // new
-
-    // as before
     #[cfg(test)]
     test_main();
 
     println!("It did not crash!");
-    loop {}
+    
+    av_os::hlt_loop();
 }
 
 // std library requires an OS to work, which we don't have
@@ -39,7 +37,7 @@ pub extern "C" fn _start() -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
-    loop {}
+    av_os::hlt_loop();
 }
 
 #[cfg(test)]
@@ -48,7 +46,7 @@ fn panic(info: &PanicInfo) -> ! {
     serial_println!("[failed]");
     serial_println!("Error: {}", info);
     exit_qemu(QemuExitCode::Failed);
-    loop {}
+    av_os::hlt_loop();
 }
 
 
