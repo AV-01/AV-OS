@@ -9,16 +9,21 @@ use core::panic::PanicInfo;
 mod vga_buffer;
 mod serial;
 
-#[unsafe(no_mangle)] // force compiler to name function "_start"
+#[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
-    let name = "Aadya";
-    println!("Hello World again from AV!");
-    println!("Now one with arguments: {}", name);
-    
+    println!("Hello World{}", "!");
+
+    av_os::init(); // new
+
+    // invoke a breakpoint exception
+    x86_64::instructions::interrupts::int3(); // new
+
+    // as before
     #[cfg(test)]
     test_main();
 
-    loop{}
+    println!("It did not crash!");
+    loop {}
 }
 
 // std library requires an OS to work, which we don't have
