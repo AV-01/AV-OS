@@ -5,14 +5,19 @@
 #![reexport_test_harness_main = "test_main"]
 #![feature(abi_x86_interrupt)]
 
+extern crate alloc;
+
 pub mod serial;
 pub mod vga_buffer;
 pub mod interrupts;
 pub mod gdt;
+pub mod memory;
 
 use core::panic::PanicInfo;
 
 use crate::interrupts::PIC_1_OFFSET;
+
+pub mod allocator;
 
 pub fn init() {
     gdt::init();
@@ -54,9 +59,14 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
 
 /// Entry point for `cargo test`
 #[cfg(test)]
-#[unsafe(no_mangle)]
-pub extern "C" fn _start() -> ! {
-    use x86_64::instructions::hlt;
+use bootloader::{entry_point, BootInfo};
+
+#[cfg(test)]
+entry_point!(test_kernel_main);
+
+#[cfg(test)]
+fn test_kernel_main(_boot_info: &'static BootInfo) -> ! {
+    // use x86_64::instructions::hlt;
 
     init();      // new
     test_main();
