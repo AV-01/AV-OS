@@ -1,11 +1,25 @@
 #![no_std]
 #![no_main]
 #![feature(custom_test_frameworks)]
-#![test_runner(crate::test_runner)]
+#![test_runner(av_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
+
+use core::panic::PanicInfo;
 
 mod vga_buffer;
 mod serial;
+
+#[unsafe(no_mangle)] // force compiler to name function "_start"
+pub extern "C" fn _start() -> ! {
+    let name = "Aadya";
+    println!("Hello World again from AV!");
+    println!("Now one with arguments: {}", name);
+    
+    #[cfg(test)]
+    test_main();
+
+    loop{}
+}
 
 // std library requires an OS to work, which we don't have
 // we don't have a runtime system, so we can't use main
@@ -14,7 +28,6 @@ mod serial;
 // core library is still available and doesn't require OS support
 
 // this one gives us info on errors that occur
-use core::panic::PanicInfo;
 
 // during fatal errors, call this function
 #[cfg(not(test))]
@@ -35,33 +48,30 @@ fn panic(info: &PanicInfo) -> ! {
 
 
 #[cfg(test)]
-pub fn test_runner(tests: &[&dyn Fn()]) {
+pub fn test_runner(tests: &[&dyn Testable]) { // new
     serial_println!("Running {} tests", tests.len());
-    for test in tests{
-        test();
+    for test in tests {
+        test.run(); // new
     }
-
     exit_qemu(QemuExitCode::Success);
 }
 
 
 #[test_case]
 fn trivial_assertion() {
-    print!("trivial assertion... ");
     assert_eq!(1, 1);
-    serial_println!("[ok]");
 }
 
-#[unsafe(no_mangle)] // force compiler to name function "_start"
-pub extern "C" fn _start() -> ! {
-    let name = "Aadya";
-    println!("Hello World again from AV!");
-    println!("Now one with arguments: {}", name);
-    
-    #[cfg(test)]
-    test_main();
+#[test_case]
+fn test_println_simple() {
+    println!("test_println_simple output");
+}
 
-    loop{}
+#[test_case]
+fn test_println_many() {
+    for _ in 0..200 {
+        println!("test_println_many output");
+    }
 }
 
 
@@ -78,5 +88,19 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
     unsafe {
         let mut port = Port::new(0xf4);
         port.write(exit_code as u32);
+    }
+}
+
+pub trait Testable {
+    fn run(&self) -> ();
+}
+impl<T> Testable for T
+where
+    T: Fn(),
+{
+    fn run(&self) {
+        serial_print!("{}...\t", core::any::type_name::<T>());
+        self();
+        serial_println!("[ok]");
     }
 }
