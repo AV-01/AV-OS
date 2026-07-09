@@ -18,3 +18,14 @@ I created the backspace function and a couple basic commands. It's very limited 
 Chaos mode was something I created entirely by myself. I have a good amount of Java knowledge, so this wasn't a crazy leap. I updated the enum to have a "next_color" function. Then, I toggled a boolean to indicate if Chaos Mode was on or off. This is unsafe!!! I'll figure out optimal safeness later. Then, I used an if-statement to check Chaos Mode, and switch the color if it was.
 
 Overall, I learned a lot during this project... 25 hours of gibberish. At least it wasn't in C!
+
+## HOW TO USE
+
+I would run this on QEMU.
+
+1. Install from these guys: https://www.qemu.org/
+2. Download the latest release (or build it yourself)
+3. Open up terminal
+4. Run command: 
+> `qemu-system-x86_64 -drive file=filename.bin,format=raw`
+5. Enjoy the best OS in the world!

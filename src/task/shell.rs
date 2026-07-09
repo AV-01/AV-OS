@@ -1,5 +1,6 @@
 use crate::print;
 use crate::println;
+use crate::serial_println;
 use crate::task::keyboard::ScancodeStream;
 use futures_util::stream::StreamExt;
 use pc_keyboard::{DecodedKey, Keyboard, ScancodeSet1, layouts, HandleControl};
@@ -84,8 +85,8 @@ pub fn execute_command(input: &str) {
     match command {
         "help" => {
             println!("Available commands:");
-            let avail_commands = ["help", "clear", "chaos", "shutdown"];
-            let desc = ["shows this list", "clear the screen", "toggles chaos mode", "closes QEMU"];
+            let avail_commands = ["help", "clear", "echo", "chaos", "shutdown"];
+            let desc = ["shows this list", "clear the screen", "repeats the given param", "toggles chaos mode", "closes QEMU"];
             
             println!();
 
@@ -115,6 +116,12 @@ pub fn execute_command(input: &str) {
                 chaos_mode = !chaos_mode;
                 println!("Chaos mode toggled: {}", if chaos_mode { "ON" } else { "OFF" });
             }
+        }
+
+        "echo" => {
+            // serial_println!("{}", input);
+            let echo = input.trim().splitn(2, " ").nth(1).unwrap_or("");
+            println!("{}", echo);
         }
 
         command => {
