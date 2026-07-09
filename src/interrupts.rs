@@ -1,7 +1,6 @@
 // use core::io::Chain;
 
 use crate::println;
-use crate::serial_println;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
 use lazy_static::lazy_static;
@@ -45,8 +44,7 @@ extern "x86-interrupt" fn page_fault_handler(
     hlt_loop();
 }
 
-
-pub static mut TIMER:u64 = 0;
+pub static mut TIMER: u64 = 0;
 
 pub fn get_timer() -> u64 {
     unsafe {

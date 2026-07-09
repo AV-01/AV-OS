@@ -66,7 +66,6 @@ pub const BUFFER_WIDTH: usize = 80;
 
 use volatile::Volatile;
 
-
 #[repr(transparent)]
 struct Buffer {
     chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT],

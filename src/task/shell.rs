@@ -2,14 +2,13 @@ use crate::interrupts::get_timer;
 use crate::print;
 use crate::println;
 use crate::task::keyboard::ScancodeStream;
-use futures_util::stream::StreamExt;
-use pc_keyboard::{DecodedKey, Keyboard, ScancodeSet1, layouts, HandleControl};
+use crate::vga_buffer::{BUFFER_WIDTH, Color, WRITER};
 use alloc::string::String;
-use x86_64::instructions::interrupts;
-use crate::vga_buffer::{BUFFER_WIDTH, WRITER, Color};
+use futures_util::stream::StreamExt;
+use pc_keyboard::{DecodedKey, HandleControl, Keyboard, ScancodeSet1, layouts};
 
 static mut CHAOS_MODE: bool = false;
-static mut CHAOS_COLOR: Color = Color::Blue; 
+static mut CHAOS_COLOR: Color = Color::Blue;
 
 pub async fn run_shell() {
     let mut scancodes = ScancodeStream::new();
@@ -31,7 +30,6 @@ pub async fn run_shell() {
                 match key {
                     DecodedKey::Unicode(character) => {
                         match character {
-
                             '\n' => {
                                 println!(); // Move to next line
                                 execute_command(&input_buffer);
@@ -86,15 +84,15 @@ pub fn execute_command(input: &str) {
         "help" => {
             println!("Available commands:");
 
-            const HELP_RESULTS:[(&str, &str); 6] = [
+            const HELP_RESULTS: [(&str, &str); 6] = [
                 ("help", "shows this list"),
                 ("clear", "clear the screen"),
                 ("echo", "repeats the given param"),
                 ("uptime", "shows how many ticks ran since powered on"),
                 ("chaos", "toggles chaos mode"),
-                ("shutdown", "closes QEMU")
+                ("shutdown", "closes QEMU"),
             ];
-      
+
             println!();
 
             for (key, desc) in HELP_RESULTS {
@@ -118,12 +116,13 @@ pub fn execute_command(input: &str) {
             crate::hlt_loop();
         }
 
-        "chaos" => {
-            unsafe {
-                CHAOS_MODE = !CHAOS_MODE;
-                println!("Chaos mode toggled: {}", if CHAOS_MODE { "ON" } else { "OFF" });
-            }
-        }
+        "chaos" => unsafe {
+            CHAOS_MODE = !CHAOS_MODE;
+            println!(
+                "Chaos mode toggled: {}",
+                if CHAOS_MODE { "ON" } else { "OFF" }
+            );
+        },
 
         "echo" => {
             // serial_println!("{}", input);

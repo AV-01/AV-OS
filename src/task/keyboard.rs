@@ -64,9 +64,9 @@ impl Stream for ScancodeStream {
 }
 
 use crate::print;
+use crate::vga_buffer::{Color, WRITER};
 use futures_util::stream::StreamExt;
 use pc_keyboard::{DecodedKey, HandleControl, Keyboard, ScancodeSet1, layouts};
-use crate::vga_buffer::{Color, WRITER};
 
 pub async fn print_keypresses() {
     let mut scancodes = ScancodeStream::new();
@@ -77,8 +77,12 @@ pub async fn print_keypresses() {
     );
 
     let colors = [
-        Color::Pink, Color::LightCyan, Color::Yellow,
-        Color::LightGreen, Color::LightRed, Color::Magenta
+        Color::Pink,
+        Color::LightCyan,
+        Color::Yellow,
+        Color::LightGreen,
+        Color::LightRed,
+        Color::Magenta,
     ];
     let mut color_index = 0;
     while let Some(scancode) = scancodes.next().await {
@@ -86,7 +90,7 @@ pub async fn print_keypresses() {
             if let Some(key) = keyboard.process_keyevent(key_event) {
                 let current_color = colors[color_index];
                 color_index = (color_index + 1) % colors.len();
-                
+
                 WRITER.lock().set_colors(current_color, Color::Black);
 
                 match key {

@@ -14,8 +14,8 @@ mod vga_buffer;
 entry_point!(kernel_main);
 
 extern crate alloc;
-use av_os::task::shell;
 use crate::vga_buffer::{Color, WRITER};
+use av_os::task::shell;
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
     use av_os::allocator;
     use av_os::memory::{self, BootInfoFrameAllocator};

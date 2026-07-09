@@ -4,8 +4,8 @@ use core::{future::Future, pin::Pin};
 
 pub mod executor;
 pub mod keyboard;
-pub mod simple_executor;
 pub mod shell;
+pub mod simple_executor;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 struct TaskId(u64);
