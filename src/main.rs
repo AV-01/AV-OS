@@ -15,6 +15,7 @@ entry_point!(kernel_main);
 
 extern crate alloc;
 use av_os::task::keyboard;
+use av_os::task::shell;
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
     use av_os::allocator;
@@ -38,7 +39,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     let mut executor = Executor::new();
     // executor.spawn(Task::new(example_task()));
-    executor.spawn(Task::new(keyboard::print_keypresses())); // new
+    executor.spawn(Task::new(shell::run_shell())); // new
     executor.run();
 }
 

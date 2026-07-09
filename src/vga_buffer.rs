@@ -73,6 +73,41 @@ impl Writer {
                 self.column_position += 1;
             }
         }
+        self.update_cursor();
+    }
+
+    /// Erase the last character visually (backspace).
+    pub fn write_backspace(&mut self) {
+        if self.column_position > 0 {
+            self.column_position -= 1;
+            let row = BUFFER_HEIGHT - 1;
+            let col = self.column_position;
+            let blank = ScreenChar {
+                ascii_character: b' ',
+                color_code: self.color_code,
+            };
+            self.buffer.chars[row][col].write(blank);
+            self.update_cursor();
+        }
+    }
+
+    /// Move the VGA hardware blinking cursor to the current write position.
+    fn update_cursor(&self) {
+        // The cursor position is a linear index into the 80x25 grid.
+        // The hardware cursor always sits on the bottom (last) row in this
+        // scroll-based design, so pos = (BUFFER_HEIGHT - 1) * BUFFER_WIDTH + column.
+        let pos: u16 = ((BUFFER_HEIGHT - 1) * BUFFER_WIDTH + self.column_position) as u16;
+        unsafe {
+            use x86_64::instructions::port::Port;
+            let mut index: Port<u8> = Port::new(0x3D4);
+            let mut data: Port<u8> = Port::new(0x3D5);
+            // High byte
+            index.write(0x0E);
+            data.write((pos >> 8) as u8);
+            // Low byte
+            index.write(0x0F);
+            data.write((pos & 0xFF) as u8);
+        }
     }
 
     pub fn write_string(&mut self, s: &str) {
@@ -111,6 +146,29 @@ impl Writer {
     pub fn set_colors(&mut self, foreground: Color, background: Color) {
         self.color_code = ColorCode::new(foreground, background);
     }
+
+    pub fn clear_screen(&mut self) {
+        for row in 0..BUFFER_HEIGHT {
+            self.clear_row(row);
+        }
+        self.column_position = 0;
+        self.update_cursor();
+    }
+}
+
+pub fn clear_screen() {
+    use x86_64::instructions::interrupts;
+    interrupts::without_interrupts(|| {
+        WRITER.lock().clear_screen();
+    });
+}
+
+/// Erase the last typed character visually.
+pub fn backspace() {
+    use x86_64::instructions::interrupts;
+    interrupts::without_interrupts(|| {
+        WRITER.lock().write_backspace();
+    });
 }
 
 use core::fmt;
