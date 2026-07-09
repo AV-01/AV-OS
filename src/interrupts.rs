@@ -1,6 +1,7 @@
 // use core::io::Chain;
 
 use crate::println;
+use crate::serial_println;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
 use lazy_static::lazy_static;
@@ -44,9 +45,21 @@ extern "x86-interrupt" fn page_fault_handler(
     hlt_loop();
 }
 
+
+pub static mut TIMER:u64 = 0;
+
+pub fn get_timer() -> u64 {
+    unsafe {
+        return TIMER;
+    }
+}
+
+#[allow(static_mut_refs)]
 extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
     // print!(".");
-
+    unsafe {
+        TIMER += 1;
+    }
     unsafe {
         PICS.lock()
             .notify_end_of_interrupt(InterruptIndex::Timer.as_u8());

@@ -1,9 +1,11 @@
+use crate::interrupts::get_timer;
 use crate::print;
 use crate::println;
 use crate::task::keyboard::ScancodeStream;
 use futures_util::stream::StreamExt;
 use pc_keyboard::{DecodedKey, Keyboard, ScancodeSet1, layouts, HandleControl};
 use alloc::string::String;
+use x86_64::instructions::interrupts;
 use crate::vga_buffer::{BUFFER_WIDTH, WRITER, Color};
 
 static mut CHAOS_MODE: bool = false;
@@ -84,10 +86,11 @@ pub fn execute_command(input: &str) {
         "help" => {
             println!("Available commands:");
 
-            const HELP_RESULTS:[(&str, &str); 5] = [
+            const HELP_RESULTS:[(&str, &str); 6] = [
                 ("help", "shows this list"),
                 ("clear", "clear the screen"),
                 ("echo", "repeats the given param"),
+                ("uptime", "shows how many ticks ran since powered on"),
                 ("chaos", "toggles chaos mode"),
                 ("shutdown", "closes QEMU")
             ];
@@ -126,6 +129,11 @@ pub fn execute_command(input: &str) {
             // serial_println!("{}", input);
             let echo = input.trim().splitn(2, " ").nth(1).unwrap_or("");
             println!("{}", echo);
+        }
+
+        "uptime" => {
+            // use crate:interrupts::get_timer;
+            println!("Ticks: {}", get_timer());
         }
 
         command => {
