@@ -107,8 +107,17 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
     use x86_64::instructions::port::Port;
 
     unsafe {
-        let mut port = Port::new(0xf4);
+        let mut port = Port::<u32>::new(0xf4);
         port.write(exit_code as u32);
+
+        let mut port_acpi = Port::<u16>::new(0x604);
+        port_acpi.write(0x2000);
+
+        let mut port_bochs = Port::<u16>::new(0xb004);
+        port_bochs.write(0x2000);
+
+        let mut port_vbox = Port::<u16>::new(0x4004);
+        port_vbox.write(0x3400);
     }
 }
 
