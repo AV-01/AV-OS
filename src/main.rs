@@ -14,16 +14,6 @@ mod vga_buffer;
 entry_point!(kernel_main);
 
 extern crate alloc;
-
-async fn async_number() -> u32 {
-    42
-}
-
-async fn example_task() {
-    let number = async_number().await;
-    println!("async number: {}", number);
-}
-
 use av_os::task::keyboard;
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
@@ -31,7 +21,8 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     use av_os::memory::{self, BootInfoFrameAllocator};
     use x86_64::VirtAddr;
 
-    println!("Hello World{}", "!");
+    println!("WELCOME TO AV OS");
+    println!("THE WORLD'S BEST OPERATING SYSTEM");
 
     av_os::init();
 
@@ -46,7 +37,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     test_main();
 
     let mut executor = Executor::new();
-    executor.spawn(Task::new(example_task()));
+    // executor.spawn(Task::new(example_task()));
     executor.spawn(Task::new(keyboard::print_keypresses())); // new
     executor.run();
 }
