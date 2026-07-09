@@ -4,21 +4,30 @@
 #![test_runner(av_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-use core::panic::PanicInfo;
-use av_os::memory::BootInfoFrameAllocator;
 use bootloader::{BootInfo, entry_point};
+use core::panic::PanicInfo;
+use av_os::task::{Task, executor::Executor};
 
-mod vga_buffer;
 mod serial;
+mod vga_buffer;
 
 entry_point!(kernel_main);
 
 extern crate alloc;
-use alloc::{boxed::Box, vec, vec::Vec, rc::Rc};
+
+async fn async_number() -> u32 {
+    42
+}
+
+async fn example_task() {
+    let number = async_number().await;
+    println!("async number: {}", number);
+}
+
+use av_os::task::keyboard;
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    use x86_64::{structures::paging::Page, VirtAddr};
-    // use av_os::memory::translate_addr;
+    use x86_64::VirtAddr;
     use av_os::allocator;
     use av_os::memory::{self, BootInfoFrameAllocator};
 
@@ -28,39 +37,22 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
-    let mut frame_allocator = unsafe {
-        BootInfoFrameAllocator::init(&boot_info.memory_map)
-    };
+    let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
 
     // new
-    allocator::init_heap(&mut mapper, &mut frame_allocator)
-        .expect("heap initialization failed");
-
-    let heap_value = Box::new(41);
-    println!("heap_value at {:p}", heap_value);
-
-    let mut vec = Vec::new();
-    for i in 0..500{
-        vec.push(i);
-    }
-    println!("vec at {:p}", vec.as_slice());
-    let reference_counted = Rc::new(vec![1, 2, 3]);
-    let cloned_reference = reference_counted.clone();
-    println!("current reference count is {}", Rc::strong_count(&cloned_reference));
-    core::mem::drop(reference_counted);
-    println!("reference count is {} now", Rc::strong_count(&cloned_reference));
+    allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 
     #[cfg(test)]
     test_main();
 
-    println!("It did not crash!");
-    
-    av_os::hlt_loop();
+    let mut executor = Executor::new();
+    executor.spawn(Task::new(example_task()));
+    executor.spawn(Task::new(keyboard::print_keypresses())); // new
+    executor.run();
 }
 
 // std library requires an OS to work, which we don't have
 // we don't have a runtime system, so we can't use main
-
 
 // core library is still available and doesn't require OS support
 
@@ -83,16 +75,15 @@ fn panic(info: &PanicInfo) -> ! {
     av_os::hlt_loop();
 }
 
-
 #[cfg(test)]
-pub fn test_runner(tests: &[&dyn Testable]) { // new
+pub fn test_runner(tests: &[&dyn Testable]) {
+    // new
     serial_println!("Running {} tests", tests.len());
     for test in tests {
         test.run(); // new
     }
     exit_qemu(QemuExitCode::Success);
 }
-
 
 #[test_case]
 fn trivial_assertion() {
@@ -110,7 +101,6 @@ fn test_println_many() {
         println!("test_println_many output");
     }
 }
-
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
