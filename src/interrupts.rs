@@ -54,9 +54,7 @@ extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFr
     }
 }
 
-extern "x86-interrupt" fn keyboard_interrupt_handler(
-    _stack_frame: InterruptStackFrame
-) {
+extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
     use x86_64::instructions::port::Port;
 
     let mut port = Port::new(0x60);

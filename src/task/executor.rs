@@ -3,7 +3,6 @@ use alloc::{collections::BTreeMap, sync::Arc, task::Wake};
 use core::task::{Context, Poll, Waker};
 use crossbeam_queue::ArrayQueue;
 
-
 pub struct Executor {
     tasks: BTreeMap<TaskId, Task>,
     task_queue: Arc<ArrayQueue<TaskId>>,
@@ -91,7 +90,6 @@ impl TaskWaker {
         self.task_queue.push(self.task_id).expect("task_queue full");
     }
 }
-
 
 impl Wake for TaskWaker {
     fn wake(self: Arc<Self>) {

@@ -4,9 +4,9 @@
 #![test_runner(av_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+use av_os::task::{Task, executor::Executor};
 use bootloader::{BootInfo, entry_point};
 use core::panic::PanicInfo;
-use av_os::task::{Task, executor::Executor};
 
 mod serial;
 mod vga_buffer;
@@ -27,9 +27,9 @@ async fn example_task() {
 use av_os::task::keyboard;
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    use x86_64::VirtAddr;
     use av_os::allocator;
     use av_os::memory::{self, BootInfoFrameAllocator};
+    use x86_64::VirtAddr;
 
     println!("Hello World{}", "!");
 
