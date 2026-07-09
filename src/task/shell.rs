@@ -1,15 +1,13 @@
 use crate::print;
 use crate::println;
-use crate::serial_println;
 use crate::task::keyboard::ScancodeStream;
 use futures_util::stream::StreamExt;
 use pc_keyboard::{DecodedKey, Keyboard, ScancodeSet1, layouts, HandleControl};
 use alloc::string::String;
-use alloc::vec::Vec;
 use crate::vga_buffer::{BUFFER_WIDTH, WRITER, Color};
 
-static mut chaos_mode: bool = false;
-static mut chaos_color: Color = Color::Blue; 
+static mut CHAOS_MODE: bool = false;
+static mut CHAOS_COLOR: Color = Color::Blue; 
 
 pub async fn run_shell() {
     let mut scancodes = ScancodeStream::new();
@@ -53,9 +51,9 @@ pub async fn run_shell() {
                                 if input_buffer.len() < 64 {
                                     input_buffer.push(c);
                                     unsafe {
-                                        if chaos_mode {
-                                            chaos_color = chaos_color.next_color();
-                                            WRITER.lock().set_colors(chaos_color, Color::Black);
+                                        if CHAOS_MODE {
+                                            CHAOS_COLOR = CHAOS_COLOR.next_color();
+                                            WRITER.lock().set_colors(CHAOS_COLOR, Color::Black);
                                         }
                                     }
                                     print!("{}", c);
@@ -85,18 +83,24 @@ pub fn execute_command(input: &str) {
     match command {
         "help" => {
             println!("Available commands:");
-            let avail_commands = ["help", "clear", "echo", "chaos", "shutdown"];
-            let desc = ["shows this list", "clear the screen", "repeats the given param", "toggles chaos mode", "closes QEMU"];
-            
+
+            const HELP_RESULTS:[(&str, &str); 5] = [
+                ("help", "shows this list"),
+                ("clear", "clear the screen"),
+                ("echo", "repeats the given param"),
+                ("chaos", "toggles chaos mode"),
+                ("shutdown", "closes QEMU")
+            ];
+      
             println!();
 
-            for i in 0..avail_commands.len() {
-                let num_spaces = BUFFER_WIDTH - 2 - avail_commands[i].len() - desc[i].len();
-                print!("  {}", avail_commands[i]);
+            for (key, desc) in HELP_RESULTS {
+                let num_spaces = BUFFER_WIDTH - 2 - key.len() - desc.len();
+                print!("  {}", key);
                 for _ in 0..num_spaces {
                     print!(" ");
                 }
-                println!("{}", desc[i]);
+                println!("{}", desc);
             }
         }
 
@@ -113,8 +117,8 @@ pub fn execute_command(input: &str) {
 
         "chaos" => {
             unsafe {
-                chaos_mode = !chaos_mode;
-                println!("Chaos mode toggled: {}", if chaos_mode { "ON" } else { "OFF" });
+                CHAOS_MODE = !CHAOS_MODE;
+                println!("Chaos mode toggled: {}", if CHAOS_MODE { "ON" } else { "OFF" });
             }
         }
 

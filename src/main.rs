@@ -14,7 +14,6 @@ mod vga_buffer;
 entry_point!(kernel_main);
 
 extern crate alloc;
-use av_os::task::keyboard;
 use av_os::task::shell;
 use crate::vga_buffer::{Color, WRITER};
 fn kernel_main(boot_info: &'static BootInfo) -> ! {

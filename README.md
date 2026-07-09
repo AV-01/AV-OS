@@ -27,5 +27,5 @@ I would run this on QEMU.
 2. Download the latest release (or build it yourself)
 3. Open up terminal
 4. Run command: 
-> `qemu-system-x86_64 -drive file=filename.bin,format=raw`
+> `qemu-system-x86_64 -drive file=bootimage-av_os.bin,format=raw`
 5. Enjoy the best OS in the world!

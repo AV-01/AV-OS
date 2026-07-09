@@ -1,6 +1,5 @@
 // use core::io::Chain;
 
-use crate::print;
 use crate::println;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
