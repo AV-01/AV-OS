@@ -10,6 +10,7 @@ use core::panic::PanicInfo;
 
 mod serial;
 mod vga_buffer;
+mod fs;
 
 entry_point!(kernel_main);
 

@@ -18,6 +18,8 @@ pub async fn run_shell() {
         HandleControl::Ignore,
     );
 
+    let mut fs = RamFileSystem::new();
+
     let mut input_buffer = String::new();
 
     print!("av_os> ");
@@ -82,18 +84,17 @@ pub fn execute_command(input: &str) {
 
     match command {
         "help" => {
-            println!("Available commands:");
+            println!("Available commands:\n");
 
-            const HELP_RESULTS: [(&str, &str); 6] = [
+            const HELP_RESULTS: [(&str, &str); 7] = [
                 ("help", "shows this list"),
                 ("clear", "clear the screen"),
-                ("echo", "repeats the given param"),
+                ("echo <param>", "repeats the given param"),
                 ("uptime", "shows how many ticks ran since powered on"),
+                ("ls", "lists the files stored"),
                 ("chaos", "toggles chaos mode"),
-                ("shutdown", "closes QEMU"),
+                ("shutdown", "closes QEMU")
             ];
-
-            println!();
 
             for (key, desc) in HELP_RESULTS {
                 let num_spaces = BUFFER_WIDTH - 2 - key.len() - desc.len();
@@ -133,6 +134,10 @@ pub fn execute_command(input: &str) {
         "uptime" => {
             // use crate:interrupts::get_timer;
             println!("Ticks: {}", get_timer());
+        }
+
+        "ls" => {
+            
         }
 
         command => {
