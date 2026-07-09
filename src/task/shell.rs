@@ -8,8 +8,7 @@ use alloc::vec::Vec;
 use crate::vga_buffer::{BUFFER_WIDTH, WRITER, Color};
 
 static mut chaos_mode: bool = false;
-static mut chaos_color: Color = Color::Blue; // start at Blue — skip Black (invisible on black bg)
-
+static mut chaos_color: Color = Color::Blue; 
 
 pub async fn run_shell() {
     let mut scancodes = ScancodeStream::new();
@@ -54,11 +53,7 @@ pub async fn run_shell() {
                                     input_buffer.push(c);
                                     unsafe {
                                         if chaos_mode {
-                                            // Advance to next color, skip Black (invisible on black bg)
                                             chaos_color = chaos_color.next_color();
-                                            if chaos_color == Color::Black {
-                                                chaos_color = chaos_color.next_color();
-                                            }
                                             WRITER.lock().set_colors(chaos_color, Color::Black);
                                         }
                                     }
