@@ -16,14 +16,17 @@ entry_point!(kernel_main);
 extern crate alloc;
 use av_os::task::keyboard;
 use av_os::task::shell;
-
+use crate::vga_buffer::{Color, WRITER};
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
     use av_os::allocator;
     use av_os::memory::{self, BootInfoFrameAllocator};
     use x86_64::VirtAddr;
 
+    WRITER.lock().set_colors(Color::LightRed, Color::Black);
     println!("WELCOME TO AV OS");
     println!("THE WORLD'S BEST OPERATING SYSTEM");
+    println!("Use command 'help' to get started");
+    WRITER.lock().set_colors(Color::LightRed, Color::Black);
 
     av_os::init();
 

@@ -19,7 +19,28 @@ pub enum Color {
     Yellow = 14,
     White = 15,
 }
-
+impl Color {
+    pub fn next_color(&self) -> Color {
+        match self {
+            Color::Black => Color::Blue,
+            Color::Blue => Color::Green,
+            Color::Green => Color::Cyan,
+            Color::Cyan => Color::Red,
+            Color::Red => Color::Magenta,
+            Color::Magenta => Color::Brown,
+            Color::Brown => Color::LightGray,
+            Color::LightGray => Color::DarkGray,
+            Color::DarkGray => Color::LightBlue,
+            Color::LightBlue => Color::LightGreen,
+            Color::LightGreen => Color::LightCyan,
+            Color::LightCyan => Color::LightRed,
+            Color::LightRed => Color::Pink,
+            Color::Pink => Color::Yellow,
+            Color::Yellow => Color::White,
+            Color::White => Color::Black,
+        }
+    }
+}
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(transparent)]
 struct ColorCode(u8);
@@ -37,10 +58,11 @@ struct ScreenChar {
     color_code: ColorCode,
 }
 
-const BUFFER_HEIGHT: usize = 25;
-const BUFFER_WIDTH: usize = 80;
+pub const BUFFER_HEIGHT: usize = 25;
+pub const BUFFER_WIDTH: usize = 80;
 
 use volatile::Volatile;
+
 
 #[repr(transparent)]
 struct Buffer {
@@ -154,6 +176,10 @@ impl Writer {
         self.column_position = 0;
         self.update_cursor();
     }
+
+    // pub fn get_curr_collor(&mut self) -> Color {
+    //     return self.color_code;
+    // }
 }
 
 pub fn clear_screen() {
