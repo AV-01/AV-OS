@@ -1,7 +1,10 @@
+#![allow(dead_code)]
+
 use alloc::vec::Vec;
 use alloc::string::String;
 use alloc::collections::BTreeMap;
 use spin::Mutex;
+use lazy_static::lazy_static;
 
 lazy_static! {
     pub static ref FILESYSTEM: Mutex<RamFileSystem> = Mutex::new(RamFileSystem::new());
@@ -25,11 +28,11 @@ impl RamFileSystem {
         self.files.insert(path.clone(), RamFile { name: path, content });
     }
 
-    pub fn read_file(&mut self, path: String) -> Vec<u8> {
+    pub fn read_file(&mut self, path: &str) -> Option<&Vec<u8>> {
         self.files.get(path).map(|f| &f.content)
     }
 
-    pub fn delete_file(&mut self, path: String) -> bool {
-        self.files.remove(path).is_some();
+    pub fn delete_file(&mut self, path: &str) -> bool {
+        self.files.remove(path).is_some()
     }
 }

@@ -1,3 +1,4 @@
+use crate::fs::FILESYSTEM;
 use crate::interrupts::get_timer;
 use crate::print;
 use crate::println;
@@ -17,8 +18,6 @@ pub async fn run_shell() {
         layouts::Us104Key,
         HandleControl::Ignore,
     );
-
-    let mut fs = RamFileSystem::new();
 
     let mut input_buffer = String::new();
 
@@ -73,7 +72,7 @@ pub async fn run_shell() {
 }
 
 #[allow(static_mut_refs)]
-pub fn execute_command(input: &str) {
+pub fn execute_command(input: &String) {
     let mut parts = input.split_whitespace();
     let command = match parts.next() {
         Some(cmd) => cmd,
@@ -86,12 +85,14 @@ pub fn execute_command(input: &str) {
         "help" => {
             println!("Available commands:\n");
 
-            const HELP_RESULTS: [(&str, &str); 7] = [
+            const HELP_RESULTS: [(&str, &str); 9] = [
                 ("help", "shows this list"),
                 ("clear", "clear the screen"),
                 ("echo <param>", "repeats the given param"),
                 ("uptime", "shows how many ticks ran since powered on"),
                 ("ls", "lists the files stored"),
+                ("write <filename> <content>", "stores <content> in a file named <filename>"),
+                ("read <filename>", "reads a stored file"),
                 ("chaos", "toggles chaos mode"),
                 ("shutdown", "closes QEMU")
             ];
@@ -137,7 +138,74 @@ pub fn execute_command(input: &str) {
         }
 
         "ls" => {
-            
+            let fs = FILESYSTEM.lock();
+            if fs.files.is_empty() {
+                println!("No files currently!");
+            }
+            else {
+                println!("Files found: \n");
+                for filename in fs.files.keys() {
+                    println!("{}", filename);
+                }
+            }
+        }
+
+        "write" => {
+            let mut comms = input.trim().splitn(3, ' ');
+            let _command = comms.next();
+            let path = comms.next();
+            let content = comms.next();
+
+            match (path, content) {
+                (Some(name), Some(text)) => {
+                    FILESYSTEM.lock().write_file(
+                        String::from(name),
+                        text.as_bytes().to_vec(),
+                    );
+                    println!("File '{}' written successfully.", name);
+                }
+
+                _ => {
+                    println!("Usage: write <filename> <content>");
+                }
+            }
+        }
+
+        "read" => {
+            let mut comms = input.trim().splitn(2, ' ');
+            let _command = comms.next();
+            let path = comms.next();
+
+            match path {
+                Some(path) => {
+                    let mut fs = FILESYSTEM.lock();
+                    let content = fs.read_file(path);
+
+                    match content {
+                        Some(data) => {
+                            let result = core::str::from_utf8(data.as_slice());
+                            match result {
+                                Ok(result) => {
+                                    println!("{}", result);
+                                }
+
+                                Err(_) => {
+                                    println!("An error occured! File is not valid utf-8");
+                                }
+                            }
+                        }
+                        
+                        None => {
+                            println!("File not found. Use command 'ls' to check if it exists!");
+                        }
+                    }
+
+                }
+                None => {
+                    println!("Usage: read <path>");
+                    println!("Make sure to include a file name!")
+                }
+            }
         }
 
         command => {
