@@ -85,7 +85,7 @@ pub fn execute_command(input: &String) {
         "help" => {
             println!("Available commands:\n");
 
-            const HELP_RESULTS: [(&str, &str); 9] = [
+            const HELP_RESULTS: [(&str, &str); 10] = [
                 ("help", "shows this list"),
                 ("clear", "clear the screen"),
                 ("echo <param>", "repeats the given param"),
@@ -93,6 +93,7 @@ pub fn execute_command(input: &String) {
                 ("ls", "lists the files stored"),
                 ("write <filename> <content>", "stores <content> in a file named <filename>"),
                 ("read <filename>", "reads a stored file"),
+                ("delete <filename>", "deletes a given file"),
                 ("chaos", "toggles chaos mode"),
                 ("shutdown", "closes QEMU")
             ];
@@ -158,11 +159,25 @@ pub fn execute_command(input: &String) {
 
             match (path, content) {
                 (Some(name), Some(text)) => {
-                    FILESYSTEM.lock().write_file(
-                        String::from(name),
-                        text.as_bytes().to_vec(),
-                    );
-                    println!("File '{}' written successfully.", name);
+                    let mut fs = FILESYSTEM.lock();
+                    
+                    let mut unique_name = true;
+
+                    for filename in fs.files.keys() {
+                        if name == filename {
+                            unique_name = false;
+                        }
+                    }
+                    if unique_name {
+                        fs.write_file(
+                            String::from(name),
+                            text.as_bytes().to_vec(),
+                        );
+                        println!("File '{}' written successfully.", name);
+                    }
+                    else {
+                        println!("{} already exists! Use a unique name.", name);
+                    }
                 }
 
                 _ => {
@@ -204,6 +219,30 @@ pub fn execute_command(input: &String) {
                 None => {
                     println!("Usage: read <path>");
                     println!("Make sure to include a file name!")
+                }
+            }
+        }
+
+        "delete" => {
+            let mut parts = input.trim().splitn(2, ' ');
+            let _c = parts.next();
+            let filename = parts.next();
+
+            match filename {
+                Some(filename) => {
+                    let mut fs = FILESYSTEM.lock();
+                    let result = fs.delete_file(filename);
+                    if result {
+                        println!("File {} deleted!", filename);
+                    }
+                    else {
+                        println!("Error! File {} not found. Use command 'ls' to check if it exists!", filename);
+                    }
+                }
+
+                None => {
+                    println!("Usage: delete <filename>");
+                    println!("Make sure to include a filename!");
                 }
             }
         }
