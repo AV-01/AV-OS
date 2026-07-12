@@ -30,7 +30,7 @@ In case you don't want to install and run it, here's a little demo of how it wou
     </td>
     <td width="50%" align="center">
       <h3>Demo Video</h3>
-      <img src="assets/AV_OS-Demo.mp4" alt="Demo Vid" width="100%">
+        <video src="assets/AV_OS-Demo.mp4" controls width="100%"></video>
     </td>
   </tr>
 </table>
