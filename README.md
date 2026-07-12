@@ -18,6 +18,15 @@ The project has these features:
 
 Overall, I learned a lot during this project... 25 hours of gibberish. Between Rust and C, I think Rust was easy to learn and use.
 
+## Demo
+
+In case you don't want to install and run it, here's a little demo of how it would look!
+
+Shell:
+![Shell](assets/AV_OS-Shell.png)
+
+Demo Video:
+![Demo Vid](assets/AV_OS-Demo.mp4)
 ## Getting Started
 
 ### Dependencies
