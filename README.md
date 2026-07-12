@@ -22,12 +22,18 @@ Overall, I learned a lot during this project... 25 hours of gibberish. Between R
 
 In case you don't want to install and run it, here's a little demo of how it would look!
 
-Shell:
-![Shell](assets/AV_OS-Shell.png)
-
-Demo Video:
-![Demo Vid](assets/AV_OS-Demo.mp4)
-## Getting Started
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <h3>Shell</h3>
+      <img src="assets/AV_OS-Shell.png" alt="Shell" width="100%">
+    </td>
+    <td width="50%" align="center">
+      <h3>Demo Video</h3>
+      <img src="assets/AV_OS-Demo.mp4" alt="Demo Vid" width="100%">
+    </td>
+  </tr>
+</table>
 
 ### Dependencies
 
