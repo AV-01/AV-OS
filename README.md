@@ -29,8 +29,10 @@ In case you don't want to install and run it, here's a little demo of how it wou
       <img src="assets/AV_OS-Shell.png" alt="Shell" width="100%">
     </td>
     <td width="50%" align="center">
-      <h3>Demo Video</h3>
-        <video src="assets/AV_OS-Demo.mp4" controls width="100%"></video>
+      <h3>Demo Video (Click to watch!)</h3>
+      <a href="https://www.youtube.com/watch?v=TztVnaJ4xbQ">
+        <img src="https://img.youtube.com/vi/TztVnaJ4xbQ/0.jpg" alt="Demo Video" width="100%">
+      </a>
     </td>
   </tr>
 </table>
