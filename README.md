@@ -1,6 +1,8 @@
+<img src="assets/AV_OS-Banner-V2.png" alt="Banner" width="100%">
+
 # AV's Rusty OS
 
-Operating System made in Rust for x86-64 machines
+Operating System made in Rust for x86-64 machines. A new alternative to Windows, Linux, and MacOS!
 
 ## Description
 
@@ -8,13 +10,13 @@ AV OS is an experimental, bare-metal operating system kernel built in Rust. Desi
 
 The project has these features:
 
+* **Hardware Interface:** Manages the system via VGA buffer for text display and serial port communication. Now comes with different colors in chaos mode!
+
 * **Custom Shell Application:** Boots up by default. Has a couple of commands for managing memory(writing files) and misc.
 
 * **Asynchronous Architecture:** Implements a cooperative multitasking model using a custom Executor, enabling task management
 
 * **Memory Management:** Uses a physical memory frame allocator and a virtual memory mapper to support a dynamic heap. Uses Linked List Allocator
-
-* **Hardware Interface:** Manages the system via VGA buffer for text display and serial port communication. Now comes with different colors in chaos mode!
 
 Overall, I learned a lot during this project... 25 hours of gibberish. Between Rust and C, I think Rust was easy to learn and use.
 
@@ -96,6 +98,9 @@ Open an issue if you need help!
 This project is licensed under the MIT License - see the LICENSE.md file for details
 
 ## Authors
+
+Check out this tuff logo I copied from Linux: 
+<img src="assets/AV_OS-Logo.png" alt="Logo" width="10%">
 
 Credit to [Philipp Oppermann's tutorial](https://os.phil-opp.com/)
 
