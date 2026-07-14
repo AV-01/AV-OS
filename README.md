@@ -98,13 +98,13 @@ Open an issue if you need help!
 This project is licensed under the MIT License - see the LICENSE.md file for details
 
 ## Authors
-<table border="0" style="border-collapse: collapse; border: none;">
+<table border="0" style="border: none; width: 100%;">
   <tr>
-    <td width="50%" align="center" style="border: none;">
+    <td style="border: none; text-align: left;">
       <p>Credit to <a href="https://os.phil-opp.com/">Philipp Oppermann's tutorial</a></p>
       <p>Made with ❤️ by AV</p>
     </td>
-    <td width="50%" align="center" style="border: none;">
+    <td style="border: none; text-align: right;">
       <img src="assets/AV_OS-Logo.png" alt="AV OS Logo" width="100">
     </td>
   </tr>
