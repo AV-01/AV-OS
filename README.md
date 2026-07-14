@@ -98,10 +98,14 @@ Open an issue if you need help!
 This project is licensed under the MIT License - see the LICENSE.md file for details
 
 ## Authors
-
-Check out this tuff logo I copied from Linux: 
-<img src="assets/AV_OS-Logo.png" alt="Logo" width="10%">
-
-Credit to [Philipp Oppermann's tutorial](https://os.phil-opp.com/)
-
-Made with ❤️ by AV
+<table border="0" style="border-collapse: collapse; border: none;">
+  <tr>
+    <td width="50%" align="center" style="border: none;">
+      <p>Credit to <a href="https://os.phil-opp.com/">Philipp Oppermann's tutorial</a></p>
+      <p>Made with ❤️ by AV</p>
+    </td>
+    <td width="50%" align="center" style="border: none;">
+      <img src="assets/AV_OS-Logo.png" alt="AV OS Logo" width="100">
+    </td>
+  </tr>
+</table>
