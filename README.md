@@ -1,4 +1,4 @@
-<img src="assets/AV_OS-Banner-V2.png" alt="Banner" width="100%">
+<img src="assets/AV_OS-Banner-V3.png" alt="Banner" width="100%">
 
 # AV's Rusty OS
 
